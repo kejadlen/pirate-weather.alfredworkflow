@@ -1,3 +1,7 @@
+## [4.0.0] - 2021-05-26
+
+- Switch to [Pirate Weather](https://pirateweather.net/)
+
 ## [3.0.3] - 2018-04-29
 
 - Update OneUpdator support since the repo structure changed.
