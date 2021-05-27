@@ -18,6 +18,8 @@ Download and install the [workflow][download].
 These environment variables can be [configured in Alfred][env-vars]:
 
 - `PIRATE_WEATHER_API_KEY`: Get an API key [here][pirate-weather-api-key].
+- `PIRATE_WEATHER_ENDPOINT`: Set to `api.darksky.net` to use Dark Sky (until
+  the API is deprecated).
 - `GOOGLE_API_KEY`: Get an API key [here][google-api-key]. (Used for geocoding
   queries. *This can be omitted if you only want the forecast for the current
   location*.)
