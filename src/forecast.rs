@@ -1,10 +1,12 @@
 use std::fmt;
+use std::fmt::Display;
 use std::result;
 
 use chrono::prelude::*;
+use chrono::serde::ts_seconds;
 use serde::Deserialize;
 
-use precipitation::{Intensity, Probability};
+use crate::precipitation::{Intensity, Probability};
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct Temperature(f64);
@@ -22,6 +24,18 @@ pub enum Units {
     Uk2,
     Us,
     Si,
+}
+
+impl Display for Units {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str(match self {
+            Units::Auto => "us",
+            Units::Ca => "ca",
+            Units::Uk2 => "uk",
+            Units::Us => "us",
+            Units::Si => "si",
+        })
+    }
 }
 
 #[derive(Debug)]
@@ -82,6 +96,7 @@ pub enum Lang {
 
 #[derive(Clone, Debug)]
 pub enum Icon {
+    Clear,
     ClearDay,
     ClearNight,
     Rain,
@@ -101,6 +116,7 @@ impl<'de> Deserialize<'de> for Icon {
         D: ::serde::Deserializer<'de>,
     {
         Ok(match String::deserialize(deserializer)?.as_str() {
+            "clear" => Icon::Clear,
             "clear-day" => Icon::ClearDay,
             "clear-night" => Icon::ClearNight,
             "rain" => Icon::Rain,
@@ -135,16 +151,8 @@ pub struct Point {
     pub precip_intensity: Option<Intensity>,
     pub precip_probability: Option<Probability>,
     pub summary: Option<String>,
-    #[serde(deserialize_with = "deserialize_timestamp")]
-    pub time: DateTime<Local>,
-}
-
-fn deserialize_timestamp<'de, D>(deserializer: D) -> result::Result<DateTime<Local>, D::Error>
-where
-    D: ::serde::Deserializer<'de>,
-{
-    let unix_time = f64::deserialize(deserializer)? as i64;
-    Ok(Local.timestamp(unix_time, 0))
+    #[serde(with = "ts_seconds")]
+    pub time: DateTime<Utc>,
 }
 
 impl Point {

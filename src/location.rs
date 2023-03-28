@@ -1,10 +1,8 @@
 use std::convert::TryFrom;
 use std::result;
 
-use reqwest;
+use color_eyre::eyre::Result;
 use serde::Deserialize;
-
-use errors::*;
 
 #[derive(Clone, Debug)]
 pub struct Location {

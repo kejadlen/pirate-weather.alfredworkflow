@@ -1,42 +1,38 @@
 # Pirate Weather Workflow for Alfred
 
-![screenshot][screenshot]
-
-[screenshot]: http://i.imgur.com/lbA9fPW.png
+![screenshot][./assets/screenshot.png]
 
 Support [Pirate Weather](https://weather.pirateweather.net/):
 
 - https://www.buymeacoffee.com/pirateweather
 - https://github.com/sponsors/alexander0042
 
+Support [Merry Sky](https://merrysky.net):
+
+- https://www.buymeacoffee.com/merrysky
+
 ## Installation
 
-Download and install the [workflow][download].
+Download and install the [workflow][releases].
 
-[download]: https://github.com/kejadlen/pirate-weather.alfredworkflow/releases/download/v4.0.0/pirate-weather.alfredworkflow
+[releases]: https://github.com/kejadlen/pirate-weather.alfredworkflow/releases
 
-These environment variables can be [configured in Alfred][env-vars]:
+The last version of this workflow that works with Alfred v4 is [v4.0.1][v4.0.1]
 
-- `PIRATE_WEATHER_API_KEY`: Get an API key [here][pirate-weather-api-key].
-- `PIRATE_WEATHER_ENDPOINT`: Set to `api.darksky.net` to use Dark Sky (until
-  the API is deprecated).
-- `GOOGLE_API_KEY`: Get an API key [here][google-api-key]. (Used for geocoding
-  queries. *This can be omitted if you only want the forecast for the current
-  location*.)
-- `FORECAST_UNITS`: Defaults to `auto`, which sets the units based on the
-  location. Use `si` for Celsius and `us` for Fahrenheit.
-- `FORECAST_LANG`: Defaults to `en`. See [Dark Sky
-  documentation][dark-sky-lang] for full list of language options.
-- `DEFAULT_LAT_LONG`: Set this to override IP geolocation. Ex:
-  `47.7396,-122.3426` for Seattle.
-- `DEFAULT_LOCATION`: Used for displaying the location name when using
-  `DEFAULT_LAT_LONG`.
-- `LIGHT_ICONS`: `true` gives white icons, `false` gives black icons.
+[v4.0.1]: https://github.com/kejadlen/pirate-weather.alfredworkflow/releases/tag/v4.0.1
 
-[env-vars]: https://www.alfredapp.com/help/workflows/advanced/variables/
-[pirate-weather-api-key]: https://pirateweather.net/getting-started
+The workflow can now be configured through [Alfred itself][alfred-config].
+
+[alfred-config]: https://www.alfredapp.com/help/workflows/user-configuration/
+
+Some of the values you may want to procure:
+
+- Get a Pirate Weather API key [here][pirate-weather-api-key].
+- Get a Google API key [here][google-api-key] for geocoding queries. *This can
+  be omitted if you only want the forecast for the current location.*
+
+[pirate-weather-api-key]: https://pirate-weather.apiable.io/products/weather-data
 [google-api-key]: https://developers.google.com/maps/documentation/geocoding/#api_key
-[dark-sky-lang]: https://darksky.net/dev/docs#forecast-request
 
 # Attributions
 

@@ -1,9 +1,7 @@
-use reqwest;
+use color_eyre::eyre::{anyhow, Result};
 use serde::Deserialize;
-use url;
 
-use errors;
-use location;
+use crate::location;
 
 pub struct Geocoder {
     api_key: String,
@@ -15,7 +13,7 @@ impl Geocoder {
         Self { api_key }
     }
 
-    pub fn geocode(&self, address: &str) -> errors::Result<location::Location> {
+    pub fn geocode(&self, address: &str) -> Result<location::Location> {
         let client = reqwest::blocking::Client::new();
 
         let mut url = url::Url::parse("https://maps.googleapis.com/maps/api/geocode/json")?;
@@ -25,13 +23,13 @@ impl Geocoder {
 
         response
             .location()
-            .ok_or_else(|| format!("unable to geocode address '{}'", address).into())
+            .ok_or_else(|| anyhow!("unable to geocode address '{}'", address))
     }
 }
 
 #[derive(Debug, Deserialize)]
 struct Response {
-    results: Vec<Result>,
+    results: Vec<LocationResult>,
 }
 
 impl Response {
@@ -45,7 +43,7 @@ impl Response {
 }
 
 #[derive(Debug, Deserialize)]
-struct Result {
+struct LocationResult {
     formatted_address: String,
     geometry: Geometry,
 }

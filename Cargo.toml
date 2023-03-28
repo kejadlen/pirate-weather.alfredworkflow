@@ -2,12 +2,15 @@
 name = "pirate-weather"
 version = "4.0.1"
 authors = ["Alpha Chen <alpha@kejadlen.dev>"]
+edition = "2021"
 
 [dependencies]
-alphred = "0.1"
-chrono = "0.4"
-error-chain = "0.11"
-reqwest = { version = "0.11", features = ["blocking", "json"] }
-serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
-url = { version = "2.2", features = ["serde"] }
+alphred = "*"
+anyhow = "*"
+chrono = { version = "*", features = ["serde"] }
+color-eyre = "*"
+reqwest = { version = "*", features = ["blocking", "json"] }
+serde = { version = "*", features = ["derive"] }
+serde_json = "*"
+thiserror = "*"
+url = { version = "*", features = ["serde"] }

@@ -1,50 +1,39 @@
-#![recursion_limit = "1024"]
-
-extern crate alphred;
-extern crate chrono;
-#[macro_use]
-extern crate error_chain;
-extern crate reqwest;
-extern crate serde;
-#[macro_use]
-extern crate serde_json;
-extern crate url;
-
-mod pirate_weather;
 mod errors;
 mod forecast;
 mod geocode;
 mod location;
+mod pirate_weather;
 mod precipitation;
 mod sparkline;
 mod theme;
 
-use std::convert::TryFrom;
 use std::env;
 
-use errors::*;
+use color_eyre::eyre::{anyhow, bail, Result};
+
 use theme::Theme;
 
-quick_main!(|| {
-    let pirate_weather_endpoint =
-        env::var("PIRATE_WEATHER_ENDPOINT").unwrap_or_else(|_| "api.pirateweather.net".into());
-    let pirate_weather_api_key = env::var("PIRATE_WEATHER_API_KEY")?;
+fn main() -> Result<()> {
+    color_eyre::install()?;
+
+    let pirate_weather_endpoint = env::var("pirate_weather_endpoint")?;
+    let pirate_weather_api_key = env::var("pirate_weather_api_key")?;
     let location = location()?;
-    let theme = if env::var("LIGHT_ICONS") == Ok("true".into()) {
+    let theme = if env::var("light_icons") == Ok("1".into()) {
         Theme::Light
     } else {
         Theme::Dark
     };
-    let units = env::var("FORECAST_UNITS").unwrap_or_else(|_| "auto".into());
+    let units = env::var("forecast_units").unwrap_or_else(|_| "auto".into());
     let units = match units.as_str() {
         "auto" => forecast::Units::Auto,
         "ca" => forecast::Units::Ca,
         "uk2" => forecast::Units::Uk2,
         "us" => forecast::Units::Us,
         "si" => forecast::Units::Si,
-        units => bail!("invalid `FORECAST_UNITS`: '{}'", units),
+        units => bail!("invalid forecast units: '{}'", units),
     };
-    let lang = env::var("FORECAST_LANG").unwrap_or_else(|_| "en".into());
+    let lang = env::var("forecast_lang").unwrap_or_else(|_| "en".into());
     let lang = match lang.as_str() {
         "ar" => forecast::Lang::Arabic,
         "az" => forecast::Lang::Azerbaijani,
@@ -99,7 +88,7 @@ quick_main!(|| {
         "x-pig-latin" => forecast::Lang::IgpayAtinlay,
         "zh" => forecast::Lang::SimplifiedChinese,
         "zh-tw" => forecast::Lang::TraditionalChinese,
-        lang => bail!("invalid `FORECAST_LANG`: '{}'", lang),
+        lang => bail!("invalid forecast language: '{}'", lang),
     };
 
     let pirate_weather = pirate_weather::PirateWeather {
@@ -111,8 +100,10 @@ quick_main!(|| {
         lang,
     };
 
-    pirate_weather.run()
-});
+    pirate_weather.run()?;
+
+    Ok(())
+}
 
 fn location() -> Result<location::Location> {
     let args: Vec<_> = env::args().skip(1).collect();
@@ -120,7 +111,7 @@ fn location() -> Result<location::Location> {
     let location = parse_default_location()?;
     match (query, location) {
         (ref query, _) if !query.is_empty() => {
-            let api_key = env::var("GOOGLE_API_KEY")?;
+            let api_key = env::var("google_api_key")?;
             let geocoder = geocode::Geocoder::new(&api_key);
             geocoder.geocode(query)
         }
@@ -130,11 +121,11 @@ fn location() -> Result<location::Location> {
 }
 
 fn parse_default_location() -> Result<Option<location::Location>> {
-    let location = match env::var("DEFAULT_LAT_LONG") {
+    let location = match env::var("default_lat_long") {
         Ok(ref lat_long) if !lat_long.is_empty() => {
             let coord = location::Coordinate::try_from(lat_long.as_str())
-                .map_err(|_| Error::from(format!("invalid `DEFAULT_LAT_LONG`: {}", lat_long)))?;
-            let description = env::var("DEFAULT_LOCATION").unwrap_or_else(|_| "".into());
+                .map_err(|_| anyhow!("invalid default latitude,longitude: {}", lat_long))?;
+            let description = env::var("default_location").unwrap_or_else(|_| "".into());
             let location = location::Location { description, coord };
             Some(location)
         }

@@ -1,12 +1,9 @@
 use alphred::Item;
 use chrono::prelude::*;
-use reqwest;
+use color_eyre::eyre::Result;
+use serde_json::json;
 
-use errors::*;
-use forecast;
-use location;
-use sparkline;
-use theme::Theme;
+use crate::{forecast, location, sparkline, theme::Theme};
 
 #[derive(Debug)]
 pub struct PirateWeather {
@@ -120,12 +117,12 @@ impl PirateWeather {
             "https://{}/forecast/{}/{},{}?units={}&lang={}",
             self.pirate_weather_endpoint, self.pirate_weather_api_key, lat, long, units, lang
         );
-        Ok(reqwest::blocking::get(&url)?.json()?)
+        Ok(reqwest::blocking::get(url)?.json()?)
     }
 
     fn arg(&self) -> String {
         let location::Coordinate(lat, long) = self.location.coord;
-        format!("{:.4},{:.4}", lat, long)
+        format!("{:.4},{:.4}/{}", lat, long, self.units)
     }
 
     fn currently(&self, point: &forecast::Point) -> Option<Item> {
@@ -196,18 +193,17 @@ impl PirateWeather {
         let max = point.apparent_temperature_max.clone()?;
         let icon = point.icon.clone()?;
 
-        let weekday = if point.time.date() == Local::today() {
+        let weekday = if point.time.date_naive() == Local::now().date_naive() {
             "Today".into()
         } else {
             point.time.format("%A").to_string()
         };
         let title = format!("{} - {}", weekday, summary);
         let subtitle = format!("Low: {} · High: {}", min, max);
-        let arg = format!("{}/{}", self.arg(), point.time.timestamp());
 
         let mut item = Item::new(title);
         item = item.subtitle(&subtitle);
-        item = item.arg(&arg);
+        item = item.arg(&self.arg());
         if let Some(path) = self.theme.icon_path(&icon) {
             item = item.icon(path.as_path());
         }

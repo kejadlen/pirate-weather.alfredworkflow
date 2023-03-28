@@ -79,7 +79,7 @@
 				<key>escaping</key>
 				<integer>0</integer>
 				<key>script</key>
-				<string>open "https://darksky.net/{query}"</string>
+				<string>open &quot;https://merrysky.net/forecast/{query}&quot;</string>
 				<key>scriptargtype</key>
 				<integer>0</integer>
 				<key>scriptfile</key>
@@ -123,72 +123,72 @@
 				<string></string>
 				<key>script</key>
 				<string># THESE VARIABLES MUST BE SET. SEE THE ONEUPDATER README FOR AN EXPLANATION OF EACH.
-readonly remote_info_plist='https://raw.githubusercontent.com/kejadlen/pirate-weather.alfredworkflow/master/workflow/info.plist'
-readonly workflow_url='kejadlen/dark-sky.alfredworkflow'
-readonly download_type='github_release'
-readonly frequency_check='4'
+readonly remote_info_plist=&apos;https://raw.githubusercontent.com/kejadlen/pirate-weather.alfredworkflow/master/workflow/info.plist&apos;
+readonly workflow_url=&apos;kejadlen/pirate-weather.alfredworkflow&apos;
+readonly download_type=&apos;github_release&apos;
+readonly frequency_check=&apos;4&apos;
 
 # FROM HERE ON, CODE SHOULD BE LEFT UNTOUCHED!
 function abort {
-  echo "${1}" &gt;&amp;2
+  echo &quot;${1}&quot; &gt;&amp;2
   exit 1
 }
 
 function url_exists {
-  curl --silent --location --output /dev/null --fail --range 0-0 "${1}"
+  curl --silent --location --output /dev/null --fail --range 0-0 &quot;${1}&quot;
 }
 
 function notification {
-  readonly local notificator="$(find . -type d -name 'Notificator.app')"
-  if [[ -n "${notificator}" ]]; then
-    "${notificator}/Contents/Resources/Scripts/notificator" --message "${1}" --title "${alfred_workflow_name}" --subtitle 'A new version is available'
+  readonly local notificator=&quot;$(find . -type d -name &apos;Notificator.app&apos;)&quot;
+  if [[ -n &quot;${notificator}&quot; ]]; then
+    &quot;${notificator}/Contents/Resources/Scripts/notificator&quot; --message &quot;${1}&quot; --title &quot;${alfred_workflow_name}&quot; --subtitle &apos;A new version is available&apos;
     return
   fi
 
-  readonly local terminal_notifier="$(find . -type f -name 'terminal-notifier')"
-  if [[ -n "${terminal_notifier}" ]]; then
-    "${terminal_notifier}" -title "${alfred_workflow_name}" -subtitle 'A new version is available' -message "${1}"
+  readonly local terminal_notifier=&quot;$(find . -type f -name &apos;terminal-notifier&apos;)&quot;
+  if [[ -n &quot;${terminal_notifier}&quot; ]]; then
+    &quot;${terminal_notifier}&quot; -title &quot;${alfred_workflow_name}&quot; -subtitle &apos;A new version is available&apos; -message &quot;${1}&quot;
     return
   fi
 
-  osascript -e "display notification \"${1}\" with title \"${alfred_workflow_name}\" subtitle \"A new version is available\""
+  osascript -e &quot;display notification \&quot;${1}\&quot; with title \&quot;${alfred_workflow_name}\&quot; subtitle \&quot;A new version is available\&quot;&quot;
 }
 
 # Local sanity checks
-readonly local_info_plist='info.plist'
-readonly local_version="$(/usr/libexec/PlistBuddy -c 'print version' "${local_info_plist}")"
+readonly local_info_plist=&apos;info.plist&apos;
+readonly local_version=&quot;$(/usr/libexec/PlistBuddy -c &apos;print version&apos; &quot;${local_info_plist}&quot;)&quot;
 
-[[ -n "${local_version}" ]] || abort 'You need to set a workflow version in the configuration sheet.'
-[[ "${download_type}" =~ ^(direct|page|github_release)$ ]] || abort "'download_type' (${download_type}) needs to be one of 'direct', 'page', or 'github_release'."
-[[ "${frequency_check}" =~ ^[0-9]+$ ]] || abort "'frequency_check' (${frequency_check}) needs to be a number."
+[[ -n &quot;${local_version}&quot; ]] || abort &apos;You need to set a workflow version in the configuration sheet.&apos;
+[[ &quot;${download_type}&quot; =~ ^(direct|page|github_release)$ ]] || abort &quot;&apos;download_type&apos; (${download_type}) needs to be one of &apos;direct&apos;, &apos;page&apos;, or &apos;github_release&apos;.&quot;
+[[ &quot;${frequency_check}&quot; =~ ^[0-9]+$ ]] || abort &quot;&apos;frequency_check&apos; (${frequency_check}) needs to be a number.&quot;
 
 # Check for updates
-if [[ $(find "${local_info_plist}" -mtime +"${frequency_check}"d) ]]; then
-  if ! url_exists "${remote_info_plist}"; then abort "'remote_info_plist' (${remote_info_plist}) appears to not be reachable."; fi # Remote sanity check
+if [[ $(find &quot;${local_info_plist}&quot; -mtime +&quot;${frequency_check}&quot;d) ]]; then
+  if ! url_exists &quot;${remote_info_plist}&quot;; then abort &quot;&apos;remote_info_plist&apos; (${remote_info_plist}) appears to not be reachable.&quot;; fi # Remote sanity check
 
-  readonly tmp_file="$(mktemp)"
-  curl --silent --location --output "${tmp_file}" "${remote_info_plist}"
-  readonly remote_version="$(/usr/libexec/PlistBuddy -c 'print version' "${tmp_file}")"
+  readonly tmp_file=&quot;$(mktemp)&quot;
+  curl --silent --location --output &quot;${tmp_file}&quot; &quot;${remote_info_plist}&quot;
+  readonly remote_version=&quot;$(/usr/libexec/PlistBuddy -c &apos;print version&apos; &quot;${tmp_file}&quot;)&quot;
 
-  if [[ "${local_version}" == "${remote_version}" ]]; then
-    touch "${local_info_plist}" # Reset timer by touching local file
+  if [[ &quot;${local_version}&quot; == &quot;${remote_version}&quot; ]]; then
+    touch &quot;${local_info_plist}&quot; # Reset timer by touching local file
     exit 0
   fi
 
-  if [[ "${download_type}" == 'page' ]]; then
-    notification 'Opening download page…'
-    open "${workflow_url}"
+  if [[ &quot;${download_type}&quot; == &apos;page&apos; ]]; then
+    notification &apos;Opening download page…&apos;
+    open &quot;${workflow_url}&quot;
     exit 0
   fi
 
-  download_url="$([[ "${download_type}" == 'github_release' ]] &amp;&amp; curl --silent "https://api.github.com/repos/${workflow_url}/releases/latest" | grep 'browser_download_url' | head -1 | sed -E 's/.*browser_download_url": "(.*)"/\1/' || echo "${workflow_url}")"
+  download_url=&quot;$([[ &quot;${download_type}&quot; == &apos;github_release&apos; ]] &amp;&amp; curl --silent &quot;https://api.github.com/repos/${workflow_url}/releases/latest&quot; | grep &apos;browser_download_url&apos; | head -1 | sed -E &apos;s/.*browser_download_url&quot;: &quot;(.*)&quot;/\1/&apos; || echo &quot;${workflow_url}&quot;)&quot;
 
-  if url_exists "${download_url}"; then
-    notification 'Downloading and installing…'
-    curl --silent --location --output "${HOME}/Downloads/${alfred_workflow_name}.alfredworkflow" "${download_url}"
-    open "${HOME}/Downloads/${alfred_workflow_name}.alfredworkflow"
+  if url_exists &quot;${download_url}&quot;; then
+    notification &apos;Downloading and installing…&apos;
+    curl --silent --location --output &quot;${HOME}/Downloads/${alfred_workflow_name}.alfredworkflow&quot; &quot;${download_url}&quot;
+    open &quot;${HOME}/Downloads/${alfred_workflow_name}.alfredworkflow&quot;
   else
-    abort "'workflow_url' (${download_url}) appears to not be reachable."
+    abort &quot;&apos;workflow_url&apos; (${download_url}) appears to not be reachable.&quot;
   fi
 fi</string>
 				<key>scriptargtype</key>
@@ -308,72 +308,72 @@ fi</string>
 				<string></string>
 				<key>script</key>
 				<string># THESE VARIABLES MUST BE SET. SEE THE ONEUPDATER README FOR AN EXPLANATION OF EACH.
-readonly remote_info_plist='https://raw.githubusercontent.com/kejadlen/pirate-weather.alfredworkflow/master/workflow/info.plist'
-readonly workflow_url='kejadlen/pirate-weather.alfredworkflow'
-readonly download_type='github_release'
-readonly frequency_check='4'
+readonly remote_info_plist=&apos;https://raw.githubusercontent.com/kejadlen/pirate-weather.alfredworkflow/master/workflow/info.plist&apos;
+readonly workflow_url=&apos;kejadlen/pirate-weather.alfredworkflow&apos;
+readonly download_type=&apos;github_release&apos;
+readonly frequency_check=&apos;4&apos;
 
 # FROM HERE ON, CODE SHOULD BE LEFT UNTOUCHED!
 function abort {
-  echo "${1}" &gt;&amp;2
+  echo &quot;${1}&quot; &gt;&amp;2
   exit 1
 }
 
 function url_exists {
-  curl --silent --location --output /dev/null --fail --range 0-0 "${1}"
+  curl --silent --location --output /dev/null --fail --range 0-0 &quot;${1}&quot;
 }
 
 function notification {
-  readonly local notificator="$(find . -type d -name 'Notificator.app')"
-  if [[ -n "${notificator}" ]]; then
-    "${notificator}/Contents/Resources/Scripts/notificator" --message "${1}" --title "${alfred_workflow_name}" --subtitle 'A new version is available'
+  readonly local notificator=&quot;$(find . -type d -name &apos;Notificator.app&apos;)&quot;
+  if [[ -n &quot;${notificator}&quot; ]]; then
+    &quot;${notificator}/Contents/Resources/Scripts/notificator&quot; --message &quot;${1}&quot; --title &quot;${alfred_workflow_name}&quot; --subtitle &apos;A new version is available&apos;
     return
   fi
 
-  readonly local terminal_notifier="$(find . -type f -name 'terminal-notifier')"
-  if [[ -n "${terminal_notifier}" ]]; then
-    "${terminal_notifier}" -title "${alfred_workflow_name}" -subtitle 'A new version is available' -message "${1}"
+  readonly local terminal_notifier=&quot;$(find . -type f -name &apos;terminal-notifier&apos;)&quot;
+  if [[ -n &quot;${terminal_notifier}&quot; ]]; then
+    &quot;${terminal_notifier}&quot; -title &quot;${alfred_workflow_name}&quot; -subtitle &apos;A new version is available&apos; -message &quot;${1}&quot;
     return
   fi
 
-  osascript -e "display notification \"${1}\" with title \"${alfred_workflow_name}\" subtitle \"A new version is available\""
+  osascript -e &quot;display notification \&quot;${1}\&quot; with title \&quot;${alfred_workflow_name}\&quot; subtitle \&quot;A new version is available\&quot;&quot;
 }
 
 # Local sanity checks
-readonly local_info_plist='info.plist'
-readonly local_version="$(/usr/libexec/PlistBuddy -c 'print version' "${local_info_plist}")"
+readonly local_info_plist=&apos;info.plist&apos;
+readonly local_version=&quot;$(/usr/libexec/PlistBuddy -c &apos;print version&apos; &quot;${local_info_plist}&quot;)&quot;
 
-[[ -n "${local_version}" ]] || abort 'You need to set a workflow version in the configuration sheet.'
-[[ "${download_type}" =~ ^(direct|page|github_release)$ ]] || abort "'download_type' (${download_type}) needs to be one of 'direct', 'page', or 'github_release'."
-[[ "${frequency_check}" =~ ^[0-9]+$ ]] || abort "'frequency_check' (${frequency_check}) needs to be a number."
+[[ -n &quot;${local_version}&quot; ]] || abort &apos;You need to set a workflow version in the configuration sheet.&apos;
+[[ &quot;${download_type}&quot; =~ ^(direct|page|github_release)$ ]] || abort &quot;&apos;download_type&apos; (${download_type}) needs to be one of &apos;direct&apos;, &apos;page&apos;, or &apos;github_release&apos;.&quot;
+[[ &quot;${frequency_check}&quot; =~ ^[0-9]+$ ]] || abort &quot;&apos;frequency_check&apos; (${frequency_check}) needs to be a number.&quot;
 
 # Check for updates
-if [[ $(find "${local_info_plist}" -mtime +"${frequency_check}"d) ]]; then
-  if ! url_exists "${remote_info_plist}"; then abort "'remote_info_plist' (${remote_info_plist}) appears to not be reachable."; fi # Remote sanity check
+if [[ $(find &quot;${local_info_plist}&quot; -mtime +&quot;${frequency_check}&quot;d) ]]; then
+  if ! url_exists &quot;${remote_info_plist}&quot;; then abort &quot;&apos;remote_info_plist&apos; (${remote_info_plist}) appears to not be reachable.&quot;; fi # Remote sanity check
 
-  readonly tmp_file="$(mktemp)"
-  curl --silent --location --output "${tmp_file}" "${remote_info_plist}"
-  readonly remote_version="$(/usr/libexec/PlistBuddy -c 'print version' "${tmp_file}")"
+  readonly tmp_file=&quot;$(mktemp)&quot;
+  curl --silent --location --output &quot;${tmp_file}&quot; &quot;${remote_info_plist}&quot;
+  readonly remote_version=&quot;$(/usr/libexec/PlistBuddy -c &apos;print version&apos; &quot;${tmp_file}&quot;)&quot;
 
-  if [[ "${local_version}" == "${remote_version}" ]]; then
-    touch "${local_info_plist}" # Reset timer by touching local file
+  if [[ &quot;${local_version}&quot; == &quot;${remote_version}&quot; ]]; then
+    touch &quot;${local_info_plist}&quot; # Reset timer by touching local file
     exit 0
   fi
 
-  if [[ "${download_type}" == 'page' ]]; then
-    notification 'Opening download page…'
-    open "${workflow_url}"
+  if [[ &quot;${download_type}&quot; == &apos;page&apos; ]]; then
+    notification &apos;Opening download page…&apos;
+    open &quot;${workflow_url}&quot;
     exit 0
   fi
 
-  download_url="$([[ "${download_type}" == 'github_release' ]] &amp;&amp; curl --silent "https://api.github.com/repos/${workflow_url}/releases/latest" | grep 'browser_download_url' | head -1 | sed -E 's/.*browser_download_url": "(.*)"/\1/' || echo "${workflow_url}")"
+  download_url=&quot;$([[ &quot;${download_type}&quot; == &apos;github_release&apos; ]] &amp;&amp; curl --silent &quot;https://api.github.com/repos/${workflow_url}/releases/latest&quot; | grep &apos;browser_download_url&apos; | head -1 | sed -E &apos;s/.*browser_download_url&quot;: &quot;(.*)&quot;/\1/&apos; || echo &quot;${workflow_url}&quot;)&quot;
 
-  if url_exists "${download_url}"; then
-    notification 'Downloading and installing…'
-    curl --silent --location --output "${HOME}/Downloads/${alfred_workflow_name}.alfredworkflow" "${download_url}"
-    open "${HOME}/Downloads/${alfred_workflow_name}.alfredworkflow"
+  if url_exists &quot;${download_url}&quot;; then
+    notification &apos;Downloading and installing…&apos;
+    curl --silent --location --output &quot;${HOME}/Downloads/${alfred_workflow_name}.alfredworkflow&quot; &quot;${download_url}&quot;
+    open &quot;${HOME}/Downloads/${alfred_workflow_name}.alfredworkflow&quot;
   else
-    abort "'workflow_url' (${download_url}) appears to not be reachable."
+    abort &quot;&apos;workflow_url&apos; (${download_url}) appears to not be reachable.&quot;
   fi
 fi</string>
 				<key>scriptargtype</key>
@@ -474,72 +474,72 @@ fi</string>
 				<string></string>
 				<key>script</key>
 				<string># THESE VARIABLES MUST BE SET. SEE THE ONEUPDATER README FOR AN EXPLANATION OF EACH.
-readonly remote_info_plist='https://raw.githubusercontent.com/kejadlen/pirate-weather.alfredworkflow/master/workflow/info.plist'
-readonly workflow_url='kejadlen/pirate-weather.alfredworkflow'
-readonly download_type='github_release'
-readonly frequency_check='4'
+readonly remote_info_plist=&apos;https://raw.githubusercontent.com/kejadlen/pirate-weather.alfredworkflow/master/workflow/info.plist&apos;
+readonly workflow_url=&apos;kejadlen/pirate-weather.alfredworkflow&apos;
+readonly download_type=&apos;github_release&apos;
+readonly frequency_check=&apos;4&apos;
 
 # FROM HERE ON, CODE SHOULD BE LEFT UNTOUCHED!
 function abort {
-  echo "${1}" &gt;&amp;2
+  echo &quot;${1}&quot; &gt;&amp;2
   exit 1
 }
 
 function url_exists {
-  curl --silent --location --output /dev/null --fail --range 0-0 "${1}"
+  curl --silent --location --output /dev/null --fail --range 0-0 &quot;${1}&quot;
 }
 
 function notification {
-  readonly local notificator="$(find . -type d -name 'Notificator.app')"
-  if [[ -n "${notificator}" ]]; then
-    "${notificator}/Contents/Resources/Scripts/notificator" --message "${1}" --title "${alfred_workflow_name}" --subtitle 'A new version is available'
+  readonly local notificator=&quot;$(find . -type d -name &apos;Notificator.app&apos;)&quot;
+  if [[ -n &quot;${notificator}&quot; ]]; then
+    &quot;${notificator}/Contents/Resources/Scripts/notificator&quot; --message &quot;${1}&quot; --title &quot;${alfred_workflow_name}&quot; --subtitle &apos;A new version is available&apos;
     return
   fi
 
-  readonly local terminal_notifier="$(find . -type f -name 'terminal-notifier')"
-  if [[ -n "${terminal_notifier}" ]]; then
-    "${terminal_notifier}" -title "${alfred_workflow_name}" -subtitle 'A new version is available' -message "${1}"
+  readonly local terminal_notifier=&quot;$(find . -type f -name &apos;terminal-notifier&apos;)&quot;
+  if [[ -n &quot;${terminal_notifier}&quot; ]]; then
+    &quot;${terminal_notifier}&quot; -title &quot;${alfred_workflow_name}&quot; -subtitle &apos;A new version is available&apos; -message &quot;${1}&quot;
     return
   fi
 
-  osascript -e "display notification \"${1}\" with title \"${alfred_workflow_name}\" subtitle \"A new version is available\""
+  osascript -e &quot;display notification \&quot;${1}\&quot; with title \&quot;${alfred_workflow_name}\&quot; subtitle \&quot;A new version is available\&quot;&quot;
 }
 
 # Local sanity checks
-readonly local_info_plist='info.plist'
-readonly local_version="$(/usr/libexec/PlistBuddy -c 'print version' "${local_info_plist}")"
+readonly local_info_plist=&apos;info.plist&apos;
+readonly local_version=&quot;$(/usr/libexec/PlistBuddy -c &apos;print version&apos; &quot;${local_info_plist}&quot;)&quot;
 
-[[ -n "${local_version}" ]] || abort 'You need to set a workflow version in the configuration sheet.'
-[[ "${download_type}" =~ ^(direct|page|github_release)$ ]] || abort "'download_type' (${download_type}) needs to be one of 'direct', 'page', or 'github_release'."
-[[ "${frequency_check}" =~ ^[0-9]+$ ]] || abort "'frequency_check' (${frequency_check}) needs to be a number."
+[[ -n &quot;${local_version}&quot; ]] || abort &apos;You need to set a workflow version in the configuration sheet.&apos;
+[[ &quot;${download_type}&quot; =~ ^(direct|page|github_release)$ ]] || abort &quot;&apos;download_type&apos; (${download_type}) needs to be one of &apos;direct&apos;, &apos;page&apos;, or &apos;github_release&apos;.&quot;
+[[ &quot;${frequency_check}&quot; =~ ^[0-9]+$ ]] || abort &quot;&apos;frequency_check&apos; (${frequency_check}) needs to be a number.&quot;
 
 # Check for updates
-if [[ $(find "${local_info_plist}" -mtime +"${frequency_check}"d) ]]; then
-  if ! url_exists "${remote_info_plist}"; then abort "'remote_info_plist' (${remote_info_plist}) appears to not be reachable."; fi # Remote sanity check
+if [[ $(find &quot;${local_info_plist}&quot; -mtime +&quot;${frequency_check}&quot;d) ]]; then
+  if ! url_exists &quot;${remote_info_plist}&quot;; then abort &quot;&apos;remote_info_plist&apos; (${remote_info_plist}) appears to not be reachable.&quot;; fi # Remote sanity check
 
-  readonly tmp_file="$(mktemp)"
-  curl --silent --location --output "${tmp_file}" "${remote_info_plist}"
-  readonly remote_version="$(/usr/libexec/PlistBuddy -c 'print version' "${tmp_file}")"
+  readonly tmp_file=&quot;$(mktemp)&quot;
+  curl --silent --location --output &quot;${tmp_file}&quot; &quot;${remote_info_plist}&quot;
+  readonly remote_version=&quot;$(/usr/libexec/PlistBuddy -c &apos;print version&apos; &quot;${tmp_file}&quot;)&quot;
 
-  if [[ "${local_version}" == "${remote_version}" ]]; then
-    touch "${local_info_plist}" # Reset timer by touching local file
+  if [[ &quot;${local_version}&quot; == &quot;${remote_version}&quot; ]]; then
+    touch &quot;${local_info_plist}&quot; # Reset timer by touching local file
     exit 0
   fi
 
-  if [[ "${download_type}" == 'page' ]]; then
-    notification 'Opening download page…'
-    open "${workflow_url}"
+  if [[ &quot;${download_type}&quot; == &apos;page&apos; ]]; then
+    notification &apos;Opening download page…&apos;
+    open &quot;${workflow_url}&quot;
     exit 0
   fi
 
-  download_url="$([[ "${download_type}" == 'github_release' ]] &amp;&amp; curl --silent "https://api.github.com/repos/${workflow_url}/releases/latest" | grep 'browser_download_url' | head -1 | sed -E 's/.*browser_download_url": "(.*)"/\1/' || echo "${workflow_url}")"
+  download_url=&quot;$([[ &quot;${download_type}&quot; == &apos;github_release&apos; ]] &amp;&amp; curl --silent &quot;https://api.github.com/repos/${workflow_url}/releases/latest&quot; | grep &apos;browser_download_url&apos; | head -1 | sed -E &apos;s/.*browser_download_url&quot;: &quot;(.*)&quot;/\1/&apos; || echo &quot;${workflow_url}&quot;)&quot;
 
-  if url_exists "${download_url}"; then
-    notification 'Downloading and installing…'
-    curl --silent --location --output "${HOME}/Downloads/${alfred_workflow_name}.alfredworkflow" "${download_url}"
-    open "${HOME}/Downloads/${alfred_workflow_name}.alfredworkflow"
+  if url_exists &quot;${download_url}&quot;; then
+    notification &apos;Downloading and installing…&apos;
+    curl --silent --location --output &quot;${HOME}/Downloads/${alfred_workflow_name}.alfredworkflow&quot; &quot;${download_url}&quot;
+    open &quot;${HOME}/Downloads/${alfred_workflow_name}.alfredworkflow&quot;
   else
-    abort "'workflow_url' (${download_url}) appears to not be reachable."
+    abort &quot;&apos;workflow_url&apos; (${download_url}) appears to not be reachable.&quot;
   fi
 fi</string>
 				<key>scriptargtype</key>
@@ -642,23 +642,23 @@ fi</string>
 			<key>note</key>
 			<string>OneUpdater</string>
 			<key>xpos</key>
-			<integer>25</integer>
+			<real>30</real>
 			<key>ypos</key>
-			<integer>310</integer>
+			<real>310</real>
 		</dict>
 		<key>2A5C0A87-204E-49EA-94A7-8E62BB4EFD8A</key>
 		<dict>
 			<key>xpos</key>
-			<integer>190</integer>
+			<real>190</real>
 			<key>ypos</key>
-			<integer>30</integer>
+			<real>30</real>
 		</dict>
 		<key>3331E3E1-4FAE-41FD-8133-DAB62076AB91</key>
 		<dict>
 			<key>xpos</key>
-			<integer>190</integer>
+			<real>190</real>
 			<key>ypos</key>
-			<integer>170</integer>
+			<real>170</real>
 		</dict>
 		<key>B9B6DB3D-FF10-4E82-B5F3-AC80EF058E0D</key>
 		<dict>
@@ -667,16 +667,16 @@ fi</string>
 			<key>note</key>
 			<string>OneUpdater</string>
 			<key>xpos</key>
-			<integer>25</integer>
+			<real>30</real>
 			<key>ypos</key>
-			<integer>30</integer>
+			<real>30</real>
 		</dict>
 		<key>E4BEE57E-E97D-4B2B-ADC1-988BF006A8CC</key>
 		<dict>
 			<key>xpos</key>
-			<integer>430</integer>
+			<real>430</real>
 			<key>ypos</key>
-			<integer>60</integer>
+			<real>60</real>
 		</dict>
 		<key>E8F22EA9-54D4-4F7D-8AAB-5875A39AE683</key>
 		<dict>
@@ -685,51 +685,181 @@ fi</string>
 			<key>note</key>
 			<string>OneUpdater</string>
 			<key>xpos</key>
-			<integer>25</integer>
+			<real>30</real>
 			<key>ypos</key>
-			<integer>170</integer>
+			<real>170</real>
 		</dict>
 		<key>F496E087-4042-44E7-B07E-71986ED6CDBA</key>
 		<dict>
 			<key>xpos</key>
-			<integer>590</integer>
+			<real>590</real>
 			<key>ypos</key>
-			<integer>30</integer>
+			<real>30</real>
 		</dict>
 		<key>FB15D46D-2086-4CE1-BCED-91700E028489</key>
 		<dict>
 			<key>xpos</key>
-			<integer>190</integer>
+			<real>190</real>
 			<key>ypos</key>
-			<integer>310</integer>
+			<real>310</real>
 		</dict>
 	</dict>
-	<key>variables</key>
-	<dict>
-		<key>DEFAULT_LAT_LONG</key>
-		<string></string>
-		<key>DEFAULT_LOCATION</key>
-		<string></string>
-		<key>FORECAST_LANG</key>
-		<string>en</string>
-		<key>FORECAST_UNITS</key>
-		<string>auto</string>
-		<key>GOOGLE_API_KEY</key>
-		<string></string>
-		<key>LIGHT_ICONS</key>
-		<string></string>
-		<key>PIRATE_WEATHER_API_KEY</key>
-		<string></string>
-		<key>PIRATE_WEATHER_ENDPOINT</key>
-		<string>api.pirateweather.net</string>
-	</dict>
-	<key>variablesdontexport</key>
+	<key>userconfigurationconfig</key>
 	<array>
-		<string>DEFAULT_LOCATION</string>
-		<string>DEFAULT_LAT_LONG</string>
-		<string>LIGHT_ICONS</string>
-		<string>PIRATE_WEATHER_API_KEY</string>
-		<string>GOOGLE_API_KEY</string>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string></string>
+				<key>placeholder</key>
+				<string></string>
+				<key>required</key>
+				<true/>
+				<key>trim</key>
+				<true/>
+			</dict>
+			<key>description</key>
+			<string></string>
+			<key>label</key>
+			<string>Pirate Weather API key</string>
+			<key>type</key>
+			<string>textfield</string>
+			<key>variable</key>
+			<string>pirate_weather_api_key</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string></string>
+				<key>placeholder</key>
+				<string></string>
+				<key>required</key>
+				<false/>
+				<key>trim</key>
+				<true/>
+			</dict>
+			<key>description</key>
+			<string>Used for geocoding queries if you want search to work</string>
+			<key>label</key>
+			<string>Google API key</string>
+			<key>type</key>
+			<string>textfield</string>
+			<key>variable</key>
+			<string>google_api_key</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<false/>
+				<key>required</key>
+				<false/>
+				<key>text</key>
+				<string></string>
+			</dict>
+			<key>description</key>
+			<string></string>
+			<key>label</key>
+			<string>Enable light icons</string>
+			<key>type</key>
+			<string>checkbox</string>
+			<key>variable</key>
+			<string>light_icons</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string>auto</string>
+				<key>pairs</key>
+				<array>
+					<array>
+						<string>auto</string>
+						<string>auto</string>
+					</array>
+					<array>
+						<string>Celsius</string>
+						<string>si</string>
+					</array>
+					<array>
+						<string>Fahrenheit</string>
+						<string>us</string>
+					</array>
+				</array>
+			</dict>
+			<key>description</key>
+			<string></string>
+			<key>label</key>
+			<string>Forecast units</string>
+			<key>type</key>
+			<string>popupbutton</string>
+			<key>variable</key>
+			<string>forecast_units</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string></string>
+				<key>placeholder</key>
+				<string>lat,long</string>
+				<key>required</key>
+				<false/>
+				<key>trim</key>
+				<true/>
+			</dict>
+			<key>description</key>
+			<string>Set this to override IP geolocation. Ex: 47.7396,-122.3426 for Seattle.</string>
+			<key>label</key>
+			<string>Default latitude and longitude</string>
+			<key>type</key>
+			<string>textfield</string>
+			<key>variable</key>
+			<string>default_lat_long</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string></string>
+				<key>placeholder</key>
+				<string></string>
+				<key>required</key>
+				<false/>
+				<key>trim</key>
+				<true/>
+			</dict>
+			<key>description</key>
+			<string>Used for displaying the location name with a default latitude and longitude</string>
+			<key>label</key>
+			<string>Default location name</string>
+			<key>type</key>
+			<string>textfield</string>
+			<key>variable</key>
+			<string>default_location</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string>api.pirateweather.net</string>
+				<key>placeholder</key>
+				<string></string>
+				<key>required</key>
+				<true/>
+				<key>trim</key>
+				<true/>
+			</dict>
+			<key>description</key>
+			<string></string>
+			<key>label</key>
+			<string>Pirate Weather endpoint</string>
+			<key>type</key>
+			<string>textfield</string>
+			<key>variable</key>
+			<string>pirate_weather_endpoint</string>
+		</dict>
 	</array>
 	<key>version</key>
 	<string>4.0.1</string>
