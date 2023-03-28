@@ -14,11 +14,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@master
 
+      - uses: dtolnay/rust-toolchain@stable
+
       - name: Build project
-        uses: actions-rs/cargo@v1
-        with:
-          command: build
-          args: --release
+        run: cargo build --release
 
       - name: Create workflow
         run: |
@@ -27,23 +26,21 @@ jobs:
 
       - name: Create release
         id: create-release
-        uses: actions/create-release@latest
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: ${{ github.ref }}
-          body: |
-            # ${{ github.ref }}
-          draft: true
-          prerelease: false
-
-      - name: Upload workflow
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create-release.outputs.upload_url }}
-          asset_path: ./pirate-weather.alfredworkflow
-          asset_name: pirate-weather.alfredworkflow
-          asset_content_type: application/zip
+        run: |
+          ASSETS_URL=$(curl -L \
+            -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            https://api.github.com/repos/${{ github.repository }}/releases \
+            -d '{"tag_name":"${{ github.ref }}","target_commitish":"${{ github.ref }}","name":"${{ github.ref }}","body":"# ${{ github.ref }}","draft":true,"prerelease":false,"generate_release_notes":false}') \
+            | jq .assets_url)
+          curl -L \
+            -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            -H "Content-Type: application/zip" \
+            "$ASSETS_URL"?name=pirate-weather.alfredworkflow \
+            https://uploads.github.com/repos/OWNER/REPO/releases/RELEASE_ID/assets?name=example.zip \
+            --data-binary "@pirate-weather.alfredworkflow"
