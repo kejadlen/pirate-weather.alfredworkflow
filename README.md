@@ -1,6 +1,6 @@
 # Pirate Weather Workflow for Alfred
 
-![screenshot][./assets/screenshot.png]
+![screenshot](./assets/screenshot.png)
 
 Support [Pirate Weather](https://weather.pirateweather.net/):
 
