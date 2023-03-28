@@ -1,6 +1,6 @@
 [package]
 name = "pirate-weather"
-version = "4.0.1"
+version = "5.0.0"
 authors = ["Alpha Chen <alpha@kejadlen.dev>"]
 edition = "2021"
 
