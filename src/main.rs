@@ -8,6 +8,7 @@ mod sparkline;
 mod theme;
 
 use std::env;
+use std::process::Command;
 
 use color_eyre::eyre::{anyhow, bail, Result};
 
@@ -19,11 +20,26 @@ fn main() -> Result<()> {
     let pirate_weather_endpoint = env::var("pirate_weather_endpoint")?;
     let pirate_weather_api_key = env::var("pirate_weather_api_key")?;
     let location = location()?;
-    let theme = if env::var("light_icons") == Ok("1".into()) {
-        Theme::Light
-    } else {
-        Theme::Dark
-    };
+    let theme = match env::var("theme")?.as_str() {
+        "auto" => {
+            let apple_interface_style = String::from_utf8(
+                Command::new("defaults")
+                    .arg("read")
+                    .arg("-g")
+                    .arg("AppleInterfaceStyle")
+                    .output()?
+                    .stdout,
+            )?;
+            if apple_interface_style.trim() == "Dark" {
+                Ok(Theme::Light)
+            } else {
+                Ok(Theme::Dark)
+            }
+        }
+        "light" => Ok(Theme::Dark),
+        "dark" => Ok(Theme::Light),
+        theme => Err(anyhow!("invalid theme: '{}'", theme)),
+    }?;
     let units = env::var("forecast_units").unwrap_or_else(|_| "auto".into());
     let units = match units.as_str() {
         "auto" => forecast::Units::Auto,

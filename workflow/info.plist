@@ -613,26 +613,36 @@ fi</string>
 		</dict>
 	</array>
 	<key>readme</key>
-	<string>- `PIRATE_WEATHER_API_KEY`: Get an API key [here][pirate-weather-api-key].
-- `PIRATE_WEATHER_ENDPOINT`: Set to `api.darksky.net` to use Dark Sky (until
-  the API is deprecated).
-- `GOOGLE_API_KEY`: Get an API key [here][google-api-key]. (Used for geocoding
-  queries. *This can be omitted if you only want the forecast for the current
-  location*.)
-- `FORECAST_UNITS`: Defaults to `auto`, which sets the units based on the
-  location. Use `si` for Celsius and `us` for Fahrenheit.
-- `FORECAST_LANG`: Defaults to `en`. See [Dark Sky
-  documentation][dark-sky-lang] for full list of language options.
-- `DEFAULT_LAT_LONG`: Set this to override IP geolocation. Ex:
-  `47.7396,-122.3426` for Seattle.
-- `DEFAULT_LOCATION`: Used for displaying the location name when using
-  `DEFAULT_LAT_LONG`.
-- `LIGHT_ICONS`: `true` gives white icons, `false` gives black icons.
+	<string># Pirate Weather Alfed Workflow
 
-[env-vars]: https://www.alfredapp.com/help/workflows/advanced/variables/
-[pirate-weather-api-key]: https://pirateweather.net/getting-started
+![screenshot](./assets/screenshot.png)
+
+Support [Pirate Weather](https://weather.pirateweather.net/):
+
+- https://www.buymeacoffee.com/pirateweather
+- https://github.com/sponsors/alexander0042
+
+Support [Merry Sky](https://merrysky.net):
+
+- https://www.buymeacoffee.com/merrysky
+
+## Configuration
+
+Some of the values you may want to procure:
+
+- Get a Pirate Weather API key [here][pirate-weather-api-key].
+- Get a Google API key [here][google-api-key] for geocoding queries. *This can
+  be omitted if you only want the forecast for the current location.*
+
+[pirate-weather-api-key]: https://pirate-weather.apiable.io/products/weather-data
 [google-api-key]: https://developers.google.com/maps/documentation/geocoding/#api_key
-[dark-sky-lang]: https://darksky.net/dev/docs#forecast-request</string>
+
+# Attributions
+
+- [Climacons](http://adamwhitcroft.com/climacons/)
+- [Pirate Weather API](https://pirateweather.net/)
+- [Google Geocoding API](https://developers.google.com/maps/documentation/geocoding/)
+- [ipinfo.io](http://ipinfo.io/)</string>
 	<key>uidata</key>
 	<dict>
 		<key>0B8AA955-D21E-4AA4-B659-BF47EA6734F0</key>
@@ -752,20 +762,31 @@ fi</string>
 			<key>config</key>
 			<dict>
 				<key>default</key>
-				<false/>
-				<key>required</key>
-				<false/>
-				<key>text</key>
-				<string></string>
+				<string>auto</string>
+				<key>pairs</key>
+				<array>
+					<array>
+						<string>Automatic</string>
+						<string>auto</string>
+					</array>
+					<array>
+						<string>Light</string>
+						<string>light</string>
+					</array>
+					<array>
+						<string>Dark</string>
+						<string>dark</string>
+					</array>
+				</array>
 			</dict>
 			<key>description</key>
 			<string></string>
 			<key>label</key>
-			<string>Enable light icons</string>
+			<string>Theme</string>
 			<key>type</key>
-			<string>checkbox</string>
+			<string>popupbutton</string>
 			<key>variable</key>
-			<string>light_icons</string>
+			<string>theme</string>
 		</dict>
 		<dict>
 			<key>config</key>
@@ -775,7 +796,7 @@ fi</string>
 				<key>pairs</key>
 				<array>
 					<array>
-						<string>auto</string>
+						<string>Automatic</string>
 						<string>auto</string>
 					</array>
 					<array>
@@ -862,7 +883,7 @@ fi</string>
 		</dict>
 	</array>
 	<key>version</key>
-	<string>4.0.1</string>
+	<string>5.0.1</string>
 	<key>webaddress</key>
 	<string>http://github.com/kejadlen/pirate-weather.alfredworkflow</string>
 </dict>

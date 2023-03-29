@@ -22,7 +22,7 @@ jobs:
       - name: Create workflow
         run: |
           cp target/release/pirate-weather workflow
-          zip -rqj pirate-weather.alfredworkflow workflow/*
+          cd workflow && zip -rq ../pirate-weather.alfredworkflow .
 
       - name: Create release
         run: |
